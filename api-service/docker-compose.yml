@@ -1,0 +1,19 @@
+version: "3"
+services:
+  database:
+    container_name: ShoppingListDB
+    image: kartoza/postgis:13.0
+    volumes:
+      - shopping-db-data:/var/lib/postgresql
+    environment:
+      - POSTGRES_DB=shoppingdb
+      - POSTGRES_USER=root
+      - POSTGRES_PASS=password
+      - ALLOW_IP_RANGE=0.0.0.0/0
+    restart: on-failure
+    ports:
+      - 0.0.0.0:4200:5432
+    shm_size: "2gb"
+
+volumes:
+  shopping-db-data: {}
