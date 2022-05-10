@@ -1,3 +1,7 @@
+import { GenericResponse, SuccessResponse } from "./types"
+
+export const API_BASE: string = process.env.VUE_APP_API_BASE ?? ""
+
 export function isMobileDevice(): boolean {
   let check = false
   ;(function (a) {
@@ -12,4 +16,8 @@ export function isMobileDevice(): boolean {
       check = true
   })(navigator.userAgent || navigator.vendor || (window as any).opera)
   return check
+}
+
+export function isSuccessResponse<T>(response: GenericResponse<T> | null | undefined): response is SuccessResponse<T> {
+  return !!response?.success
 }

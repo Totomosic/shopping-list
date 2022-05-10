@@ -12,8 +12,8 @@ table! {
     users (id) {
         id -> Int4,
         display_name -> Varchar,
-        username -> Bpchar,
-        password_hash -> Bpchar,
+        username -> Varchar,
+        password_hash -> Varchar,
         is_admin -> Bool,
     }
 }

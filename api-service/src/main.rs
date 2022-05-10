@@ -14,9 +14,11 @@ extern crate serde_derive;
 extern crate serde_json;
 
 use dotenv::dotenv;
-use routes::*;
 use std::env;
 // use std::process::Command;
+
+use rocket::http::Method;
+use rocket_cors::{AllowedOrigins, CorsOptions};
 
 mod auth;
 mod db;
@@ -32,10 +34,29 @@ fn rocket() -> rocket::Rocket {
     let database_url = env::var("DATABASE_URL").expect("set DATABASE_URL");
 
     let pool = db::init_pool(database_url);
+
+    let cors = CorsOptions::default()
+        .allowed_origins(AllowedOrigins::all())
+        .allowed_methods(
+            vec![Method::Get, Method::Post, Method::Patch]
+                .into_iter()
+                .map(From::from)
+                .collect(),
+        )
+        .allow_credentials(true);
+
     rocket::ignite()
         .manage(pool)
-        .mount("/", routes![index])
-        .mount("/api/v1/", routes![get_users])
+        .attach(cors.to_cors().unwrap())
+        .mount("/", routes![routes::public::index])
+        .mount(
+            "/api/v1/",
+            routes![
+                routes::users::get_users,
+                routes::auth::basic_auth,
+                routes::auth::refresh_jwt
+            ],
+        )
 }
 
 fn main() {
