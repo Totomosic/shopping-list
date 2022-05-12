@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <div class="nav-bar" :style="style"></div>
-    <div class="open-button" @click="open = !open">
+    <div class="open-button" :style="buttonStyle" @click="open = !open">
       <div class="text-white">
         <ArrowLeft v-if="open" class="svg-icon"></ArrowLeft>
         <ArrowRight v-else class="svg-icon"></ArrowRight>
@@ -20,10 +20,12 @@
   width: 2em;
   height: 3em;
   background-color: #111;
-  margin-top: auto;
   cursor: pointer;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+  position: absolute;
+  bottom: 0;
+  transition: left 0.3s;
 }
 
 .svg-icon {
@@ -36,6 +38,9 @@ import { Options, Vue } from "vue-class-component"
 import { isMobileDevice } from "@/utils/utils"
 
 import { ArrowLeft, ArrowRight } from "@element-plus/icons-vue"
+import { Prop } from "vue-property-decorator"
+
+export const SIDEBAR_WIDTH = "20em"
 
 @Options({
   components: {
@@ -44,12 +49,26 @@ import { ArrowLeft, ArrowRight } from "@element-plus/icons-vue"
   },
 })
 export default class NavigationComponent extends Vue {
-  public open: boolean = !isMobileDevice()
+  @Prop({ default: !isMobileDevice() }) modelValue!: boolean
 
   public get style(): any {
     return {
-      width: this.open ? "20em" : "0",
+      width: this.open ? SIDEBAR_WIDTH : "0",
     }
+  }
+
+  public get buttonStyle(): any {
+    return {
+      left: this.open ? SIDEBAR_WIDTH : "0",
+    }
+  }
+
+  public get open(): boolean {
+    return this.modelValue
+  }
+
+  public set open(value: boolean) {
+    this.$emit("update:modelValue", value)
   }
 }
 </script>

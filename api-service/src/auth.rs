@@ -1,5 +1,4 @@
 use std::ops::Deref;
-use std::str::FromStr;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::db::{HmacSha256, StateInstance};
@@ -25,6 +24,7 @@ pub struct RefreshJwtToken {
     pub token_type: String,
     pub exp: u128,
     pub user_id: i32,
+    pub display_name: String,
     pub is_admin: bool,
 }
 
@@ -33,6 +33,7 @@ pub struct AccessJwtToken {
     pub token_type: String,
     pub exp: u128,
     pub user_id: i32,
+    pub display_name: String,
     pub is_admin: bool,
 }
 
@@ -53,6 +54,7 @@ pub fn generate_refresh_token(user: &User, key: &HmacSha256) -> String {
         token_type: String::from("refresh"),
         exp: get_timestamp_ms() + REFRESH_TOKEN_EXPIRY,
         user_id: user.id,
+        display_name: user.display_name.clone(),
         is_admin: user.is_admin,
     };
     let token_string = token.sign_with_key(key);
@@ -78,6 +80,7 @@ pub fn generate_access_token(user: &User, key: &HmacSha256) -> String {
         token_type: String::from("access"),
         exp: get_timestamp_ms() + ACCESS_TOKEN_EXPIRY,
         user_id: user.id,
+        display_name: user.display_name.clone(),
         is_admin: user.is_admin,
     };
     let token_string = token.sign_with_key(key);

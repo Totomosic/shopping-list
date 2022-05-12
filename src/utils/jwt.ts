@@ -1,3 +1,4 @@
+import { GlobalStore } from "@/store"
 import jwt_decode from "jwt-decode"
 import { fetchJson } from "./fetch"
 import { Dictionary, GenericResponse, IJwtToken } from "./types"
@@ -44,7 +45,7 @@ function getJwtHeadersFromAccessToken(token: string): Dictionary<string> {
   }
 }
 
-export async function getJwtHeaders(): Promise<Dictionary<string> | null> {
+export async function getJwtHeaders(store: GlobalStore): Promise<Dictionary<string> | null> {
   const accessToken = localStorage.getItem(JWT_ACCESS_STORAGE_KEY)
   if (accessToken) {
     const parsedAccessToken = decodeJwt(accessToken)
@@ -53,20 +54,41 @@ export async function getJwtHeaders(): Promise<Dictionary<string> | null> {
     }
   }
 
-  const refreshToken = localStorage.getItem(JWT_REFRESH_STORAGE_KEY)
+  const refreshToken = await getRefreshTokenOrLogin(store)
   if (refreshToken) {
-    const parsedRefreshToken = decodeJwt(refreshToken)
-    if (parsedRefreshToken && !isExpired(parsedRefreshToken)) {
-      const response = await fetchJson<GenericResponse<{ token: string }>>(`${API_BASE}/core/auth/refresh`, {
-        method: "POST",
-        body: {
-          token: refreshToken,
-        },
-      })
-      if (isSuccessResponse(response)) {
-        return getJwtHeadersFromAccessToken(response.data.token)
-      }
+    const response = await fetchJson<GenericResponse<{ token: string }>>(`${API_BASE}/core/auth/refresh`, {
+      method: "POST",
+      body: {
+        token: localStorage.getItem(JWT_REFRESH_STORAGE_KEY),
+      },
+    })
+    if (isSuccessResponse(response)) {
+      return getJwtHeadersFromAccessToken(response.data.token)
     }
   }
   return null
+}
+
+export function getRefreshToken(): IJwtToken | null {
+  const refreshToken = localStorage.getItem(JWT_REFRESH_STORAGE_KEY)
+  if (refreshToken) {
+    const parsedRefreshToken = decodeJwt(refreshToken)
+    if (!!parsedRefreshToken && !isExpired(parsedRefreshToken)) {
+      return parsedRefreshToken
+    }
+  }
+  return null
+}
+
+export function isLoggedIn(): boolean {
+  return !!getRefreshToken()
+}
+
+export async function getRefreshTokenOrLogin(store: GlobalStore): Promise<IJwtToken | null> {
+  const token = getRefreshToken()
+  if (token) {
+    return token
+  }
+  await store.wrappers.auth.waitForLogin()
+  return getRefreshToken()
 }

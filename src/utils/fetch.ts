@@ -1,3 +1,5 @@
+import { GlobalStore } from "@/store"
+import { getJwtHeaders } from "./jwt"
 import { Dictionary } from "./types"
 
 export interface IFetchOptions {
@@ -25,4 +27,18 @@ export async function fetchJson<T>(endpoint: string, options?: Partial<IFetchOpt
   } catch (err) {
     return null
   }
+}
+
+export async function fetchJsonAuthenticated<T>(
+  endpoint: string,
+  store: GlobalStore,
+  options?: Partial<IFetchOptions>
+): Promise<T | null> {
+  return fetchJson<T>(endpoint, {
+    ...options,
+    headers: {
+      ...options?.headers,
+      ...(await getJwtHeaders(store)),
+    },
+  })
 }

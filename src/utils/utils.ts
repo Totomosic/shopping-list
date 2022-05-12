@@ -21,3 +21,27 @@ export function isMobileDevice(): boolean {
 export function isSuccessResponse<T>(response: GenericResponse<T> | null | undefined): response is SuccessResponse<T> {
   return !!response?.success
 }
+
+export function isNullOrUndefined<T>(value: T | null | undefined): value is null | undefined {
+  return value === null || value === undefined
+}
+
+export function stableSort<T>(items: T[], sortFn: (a: T, b: T) => number): T[] {
+  const processed: Array<{ item: T; index: number }> = items.map((item, index) => ({ item, index }))
+  processed.sort((a, b) => {
+    const result = sortFn(a.item, b.item)
+    if (result === 0) {
+      return a.index - b.index
+    }
+    return result
+  })
+  return processed.map((item) => item.item)
+}
+
+export function getInitialsFromDisplayName(name: string): string {
+  const words = name.split(" ")
+  return words
+    .filter((word) => word.length > 0)
+    .map((word) => word[0].toUpperCase())
+    .join("")
+}

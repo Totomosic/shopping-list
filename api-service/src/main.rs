@@ -15,7 +15,7 @@ extern crate serde_json;
 
 use dotenv::dotenv;
 use std::env;
-// use std::process::Command;
+use std::process::Command;
 
 use rocket::http::Method;
 use rocket_cors::{AllowedOrigins, CorsOptions};
@@ -60,17 +60,17 @@ fn rocket() -> rocket::Rocket {
 }
 
 fn main() {
-    // let _output = if cfg!(target_os = "windows") {
-    //     Command::new("cmd")
-    //         .args(&["/C", "cd ui && npm start"])
-    //         .spawn()
-    //         .expect("Failed to start UI Application")
-    // } else {
-    //     Command::new("sh")
-    //         .arg("-c")
-    //         .arg("cd ui && npm start")
-    //         .spawn()
-    //         .expect("Failed to start UI Application")
-    // };
+    let _output = if cfg!(target_os = "windows") {
+        Command::new("cmd")
+            .args(&["/C", "cd .. && yarn serve"])
+            .spawn()
+            .expect("Failed to start UI Application")
+    } else {
+        Command::new("sh")
+            .arg("-c")
+            .arg("cd .. && yarn serve")
+            .spawn()
+            .expect("Failed to start UI Application")
+    };
     rocket().launch();
 }
