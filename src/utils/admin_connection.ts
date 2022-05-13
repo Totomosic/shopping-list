@@ -1,6 +1,6 @@
 import { GlobalStore } from "@/store"
 import { fetchJsonAuthenticated, IFetchOptions } from "./fetch"
-import { GenericResponse, IUser } from "./types"
+import { GenericResponse, INewUser, IUser } from "./types"
 import { API_BASE, isSuccessResponse } from "./utils"
 
 export class AdminDataConnection {
@@ -16,6 +16,21 @@ export class AdminDataConnection {
       return users.data
     }
     return []
+  }
+
+  public async createNewUser(user: INewUser): Promise<IUser | null> {
+    const createdUser = await this.fetch<IUser>("/users", {
+      method: "POST",
+      body: user,
+    })
+    return createdUser?.data ?? null
+  }
+
+  public async deleteUser(userId: number): Promise<IUser | null> {
+    const deletedUser = await this.fetch<IUser>(`/users/${userId}`, {
+      method: "DELETE",
+    })
+    return deletedUser?.data ?? null
   }
 
   private async fetch<T>(endpoint: string, options?: Partial<IFetchOptions>): Promise<GenericResponse<T> | null> {

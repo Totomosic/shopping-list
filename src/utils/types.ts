@@ -33,6 +33,13 @@ export interface IUser {
   is_admin: boolean
 }
 
+export interface INewUser {
+  display_name: string
+  username: string
+  password: string
+  is_admin: boolean
+}
+
 export const EVENT_EMITTER_PRIORITY_DEFAULT = 0
 export const EVENT_EMITTER_PRIORITY_MAX = 1000
 export const EVENT_EMITTER_PRIORITY_MIN = -1000

@@ -73,9 +73,9 @@ fn create_super_user(state: &StateInstance) {
             // Create here
             User::delete_all_admins(&state.connection);
             User::insert_user(
-                NewUser {
+                &NewUser {
                     display_name: String::from("Super User"),
-                    username: username,
+                    username,
                     password_hash: state.hash_password(password.as_str()),
                     is_admin: true,
                 },

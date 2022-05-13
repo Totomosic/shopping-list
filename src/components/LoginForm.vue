@@ -4,11 +4,11 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     :show-close="false"
-    width="30%"
+    width="20em"
     title="Login"
     @close="closeForm"
   >
-    <div>
+    <div tabindex="0" @keypress="handleKeyPress">
       <!-- <h3 class="text-left text-2xl font-bold mb-4">Login</h3> -->
       <el-form :label-width="100">
         <el-form-item label="Username">
@@ -81,6 +81,12 @@ export default class LoginFormComponent extends Vue {
       this.store.wrappers.auth.notifyLoginComplete(true)
     } else {
       this.error = response?.error ?? "Unable to login"
+    }
+  }
+
+  public async handleKeyPress(event: KeyboardEvent) {
+    if (event.key === "Enter" && this.canLogin) {
+      await this.login()
     }
   }
 }

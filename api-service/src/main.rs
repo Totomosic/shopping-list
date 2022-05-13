@@ -38,7 +38,7 @@ fn rocket() -> rocket::Rocket {
     let cors = CorsOptions::default()
         .allowed_origins(AllowedOrigins::all())
         .allowed_methods(
-            vec![Method::Get, Method::Post, Method::Patch]
+            vec![Method::Get, Method::Post, Method::Patch, Method::Delete]
                 .into_iter()
                 .map(From::from)
                 .collect(),
@@ -52,9 +52,11 @@ fn rocket() -> rocket::Rocket {
         .mount(
             "/api/v1/",
             routes![
-                routes::users::get_users,
                 routes::auth::basic_auth,
-                routes::auth::refresh_jwt
+                routes::auth::refresh_jwt,
+                routes::users::get_users,
+                routes::users::post_new_user,
+                routes::users::delete_user,
             ],
         )
 }

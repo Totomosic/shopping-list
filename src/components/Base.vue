@@ -9,6 +9,7 @@
           popper-class="avatar-popover-container"
         >
           <template #default>
+            <div v-if="isAdmin" class="profile-action" @click="goToAdminPage">Admin</div>
             <div class="profile-action" @click="logoutOrLogin">{{ signoutButtonText }}</div>
           </template>
           <template #reference>
@@ -87,6 +88,10 @@ export default class BaseComponent extends Vue {
     await this.store.wrappers.auth.loadUser()
   }
 
+  public get isAdmin(): boolean {
+    return this.user?.is_admin ?? false
+  }
+
   public get user(): IJwtToken | null {
     return this.store.wrappers.auth.user
   }
@@ -115,6 +120,11 @@ export default class BaseComponent extends Vue {
       this.store.wrappers.auth.loadUser()
     }
     this.popoverOpen = false
+  }
+
+  public goToAdminPage() {
+    this.popoverOpen = false
+    this.$router.push({ name: "Admin" })
   }
 }
 </script>

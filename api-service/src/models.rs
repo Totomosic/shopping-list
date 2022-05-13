@@ -21,9 +21,7 @@ pub struct User {
 #[table_name = "users"]
 pub struct NewUser {
     pub display_name: String,
-    #[serde(skip_serializing)]
     pub username: String,
-    #[serde(skip_serializing)]
     pub password_hash: String,
     pub is_admin: bool,
 }
@@ -49,9 +47,16 @@ impl User {
             .first::<User>(conn)
     }
 
-    pub fn insert_user(user: NewUser, conn: &PgConnection) -> bool {
+    pub fn insert_user(user: &NewUser, conn: &PgConnection) -> bool {
         diesel::insert_into(users::table)
-            .values(&user)
+            .values(user)
+            .execute(conn)
+            .is_ok()
+    }
+
+    pub fn delete_user(user_id: i32, conn: &PgConnection) -> bool {
+        diesel::delete(users::table)
+            .filter(users::id.eq(user_id))
             .execute(conn)
             .is_ok()
     }
@@ -61,5 +66,9 @@ impl User {
             .filter(users::is_admin.eq(true))
             .execute(conn)
             .is_ok()
+    }
+
+    pub fn get_last_inserted_user(conn: &PgConnection) -> Result<User, diesel::result::Error> {
+        all_users.order(users::id.desc()).first::<User>(conn)
     }
 }
