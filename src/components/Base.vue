@@ -9,8 +9,14 @@
           popper-class="avatar-popover-container"
         >
           <template #default>
-            <div v-if="isAdmin" class="profile-action" @click="goToAdminPage">Admin</div>
-            <div class="profile-action" @click="logoutOrLogin">{{ signoutButtonText }}</div>
+            <div class="flex p-2">
+              <el-avatar class="profile-image" @click="popoverOpen = !popoverOpen">{{ userInitials }}</el-avatar>
+              <div class="m-auto">{{ userName }}</div>
+            </div>
+            <div>
+              <div v-if="isAdmin" class="profile-action" @click="goToAdminPage">Admin</div>
+              <div class="profile-action" @click="logoutOrLogin">{{ signoutButtonText }}</div>
+            </div>
           </template>
           <template #reference>
             <el-avatar class="profile-image" @click="popoverOpen = !popoverOpen">{{ userInitials }}</el-avatar>
@@ -47,6 +53,8 @@
 .profile-action {
   cursor: pointer;
   padding: 0.5em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 .profile-action:hover {
@@ -101,6 +109,13 @@ export default class BaseComponent extends Vue {
       return getInitialsFromDisplayName(this.user.display_name)
     }
     return "G"
+  }
+
+  public get userName(): string {
+    if (this.user) {
+      return this.user.display_name
+    }
+    return "Guest"
   }
 
   public get signoutButtonText(): string {

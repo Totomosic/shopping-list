@@ -57,6 +57,9 @@ fn rocket() -> rocket::Rocket {
                 routes::users::get_users,
                 routes::users::post_new_user,
                 routes::users::delete_user,
+                routes::item::get_all_items,
+                routes::item::post_new_item,
+                routes::item::delete_item,
             ],
         )
 }

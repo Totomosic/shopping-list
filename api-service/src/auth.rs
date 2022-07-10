@@ -2,7 +2,7 @@ use std::ops::Deref;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::db::{HmacSha256, StateInstance};
-use crate::models::User;
+use crate::models::auth::User;
 use crate::responses::{error_response, JsonResponse};
 
 use jwt::{Error, SignWithKey, VerifyWithKey};

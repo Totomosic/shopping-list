@@ -1,5 +1,5 @@
-use super::schema::users;
-use super::schema::users::dsl::users as all_users;
+use crate::schema::users;
+use crate::schema::users::dsl::users as all_users;
 use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
@@ -34,27 +34,27 @@ impl User {
             .expect("Error loading users")
     }
 
-    pub fn get_user_by_id(id: i32, conn: &PgConnection) -> Result<User, diesel::result::Error> {
+    pub fn get_user_by_id(conn: &PgConnection, id: i32) -> Result<User, diesel::result::Error> {
         all_users.find(id).first::<User>(conn)
     }
 
     pub fn get_user_by_username(
-        username: &str,
         conn: &PgConnection,
+        username: &str,
     ) -> Result<User, diesel::result::Error> {
         all_users
             .filter(users::username.eq(username))
             .first::<User>(conn)
     }
 
-    pub fn insert_user(user: &NewUser, conn: &PgConnection) -> bool {
+    pub fn insert_user(conn: &PgConnection, user: &NewUser) -> bool {
         diesel::insert_into(users::table)
             .values(user)
             .execute(conn)
             .is_ok()
     }
 
-    pub fn delete_user(user_id: i32, conn: &PgConnection) -> bool {
+    pub fn delete_user(conn: &PgConnection, user_id: i32) -> bool {
         diesel::delete(users::table)
             .filter(users::id.eq(user_id))
             .execute(conn)

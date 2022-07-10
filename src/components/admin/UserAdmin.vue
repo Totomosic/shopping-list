@@ -50,6 +50,7 @@ import LoadingButton from "../modules/LoadingButton.vue"
 
 import { Plus } from "@element-plus/icons-vue"
 import { shallowRef } from "vue"
+import { ElMessage } from "element-plus"
 
 @Options({
   components: {
@@ -60,6 +61,7 @@ export default class UserAdmin extends Vue {
   @Prop(AdminDataConnection) connection!: AdminDataConnection
 
   public Plus = shallowRef(Plus)
+  public readonly Message = ElMessage
 
   public users: IUser[] = []
   public creatingUser: boolean = false
@@ -90,6 +92,9 @@ export default class UserAdmin extends Vue {
     const user = await this.connection.createNewUser(this.newUser)
     if (user) {
       await this.loadUsers()
+      this.Message.success(`Successfully created user: ${user.display_name}`)
+    } else {
+      this.Message.error(`Failed to create user`)
     }
     this.cancelCreatingUser()
   }

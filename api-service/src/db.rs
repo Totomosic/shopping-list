@@ -9,7 +9,7 @@ use rocket::request::{self, FromRequest};
 use rocket::{Request, State};
 use sha2::Sha256;
 
-use super::models::{NewUser, User};
+use super::models::auth::{NewUser, User};
 
 pub type HmacSha256 = Hmac<Sha256>;
 
@@ -66,20 +66,20 @@ impl ApplicationState {
 fn create_super_user(state: &StateInstance) {
     let username = std::env::var("SUPER_USER_USERNAME").expect("SUPER_USER_USERNAME not found.");
     let password = std::env::var("SUPER_USER_PASSWORD").expect("SUPER_USER_PASSWORD not found.");
-    let existing_user = User::get_user_by_username(&username.as_str(), &state.connection);
+    let existing_user = User::get_user_by_username(&state.connection, &username.as_str());
     match existing_user {
         Ok(_) => println!("Superuser already exists."),
         Err(_) => {
             // Create here
             User::delete_all_admins(&state.connection);
             User::insert_user(
+                &state.connection,
                 &NewUser {
                     display_name: String::from("Super User"),
                     username,
                     password_hash: state.hash_password(password.as_str()),
                     is_admin: true,
                 },
-                &state.connection,
             );
             println!("Created Superuser.")
         }

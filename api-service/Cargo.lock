@@ -80,6 +80,7 @@ version = "0.1.0"
 dependencies = [
  "custom_derive",
  "diesel",
+ "diesel-enum",
  "dotenv",
  "hmac 0.12.1",
  "jwt",
@@ -327,6 +328,17 @@ dependencies = [
  "byteorder",
  "diesel_derives",
  "pq-sys",
+]
+
+[[package]]
+name = "diesel-enum"
+version = "0.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "61f38b2219023272e1af42bc41b6ffc9bc6e7b2b251d335f9e091aeaf232164c"
+dependencies = [
+ "proc-macro2 1.0.38",
+ "quote 1.0.18",
+ "syn 1.0.92",
 ]
 
 [[package]]

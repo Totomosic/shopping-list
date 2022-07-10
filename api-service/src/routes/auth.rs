@@ -1,8 +1,9 @@
 use crate::auth::{
     generate_access_token, generate_refresh_token, verify_refresh_token, PublicRequest,
 };
-use crate::models::User;
+use crate::models::auth::User;
 use crate::responses::{error_response, success_response, JsonResponse};
+use crate::utils::handle_request;
 use rocket::http::Status;
 use rocket_contrib::json::Json;
 use serde_derive::Deserialize;
@@ -23,11 +24,11 @@ pub fn basic_auth(
     request: Result<PublicRequest, JsonResponse>,
     auth: Option<Json<BasicAuth>>,
 ) -> JsonResponse {
-    match request {
-        Ok(req) => match auth {
+    handle_request(request, |req| -> JsonResponse {
+        match &auth {
             Some(body) => {
                 let potential_user =
-                    User::get_user_by_username(body.username.as_str(), &req.state.connection);
+                    User::get_user_by_username(&req.state.connection, body.username.as_str());
                 match potential_user {
                     Ok(user) => {
                         if req
@@ -46,9 +47,8 @@ pub fn basic_auth(
                 }
             }
             None => error_response(Status::BadRequest, "Invalid body data"),
-        },
-        Err(res) => res,
-    }
+        }
+    })
 }
 
 #[post("/core/auth/refresh", data = "<refresh>")]
@@ -56,12 +56,12 @@ pub fn refresh_jwt(
     request: Result<PublicRequest, JsonResponse>,
     refresh: Option<Json<JwtRefresh>>,
 ) -> JsonResponse {
-    match request {
-        Ok(req) => match refresh {
+    handle_request(request, |req| -> JsonResponse {
+        match refresh {
             Some(refresh_token) => {
                 let token = verify_refresh_token(&refresh_token.token, &req.state.jwt_key);
                 match token {
-                    Some(tok) => match User::get_user_by_id(tok.user_id, &req.state.connection) {
+                    Some(tok) => match User::get_user_by_id(&req.state.connection, tok.user_id) {
                         Ok(user) => {
                             let access_token = generate_access_token(&user, &req.state.jwt_key);
                             if !access_token.is_empty() {
@@ -81,7 +81,6 @@ pub fn refresh_jwt(
                 }
             }
             None => error_response(Status::BadRequest, "Failed to parse body"),
-        },
-        Err(res) => res,
-    }
+        }
+    })
 }

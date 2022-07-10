@@ -1,4 +1,4 @@
-import { GenericResponse, SuccessResponse } from "./types"
+import { GenericResponse, SuccessResponse, UnitType } from "./types"
 
 export const API_BASE: string = process.env.VUE_APP_API_BASE ?? ""
 
@@ -44,4 +44,18 @@ export function getInitialsFromDisplayName(name: string): string {
     .filter((word) => word.length > 0)
     .map((word) => word[0].toUpperCase())
     .join("")
+}
+
+export function formatUnitType(type: UnitType): string {
+  switch (type) {
+    case UnitType.Count:
+      return "Count"
+    case UnitType.Mass:
+      return "Mass"
+    case UnitType.Capacity:
+      return "Capacity"
+    default:
+      break
+  }
+  return "Unknown"
 }

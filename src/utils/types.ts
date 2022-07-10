@@ -2,6 +2,11 @@ import { isNullOrUndefined, stableSort } from "./utils"
 
 export type Dictionary<T> = { [key: string]: T }
 
+export interface ILabelledValue<T> {
+  label: string
+  value: T
+}
+
 export interface IJwtToken {
   token_type: "access" | "refresh"
   exp: number
@@ -38,6 +43,27 @@ export interface INewUser {
   username: string
   password: string
   is_admin: boolean
+}
+
+export enum UnitType {
+  Count = "Count",
+  Mass = "Mass",
+  Capacity = "Capacity",
+}
+
+export interface IShoppingItem {
+  id: number
+  name: string
+  description: string | null
+  image_url: string | null
+  default_unit_type: UnitType
+}
+
+export interface INewShoppingItem {
+  name: string
+  description: string | null
+  image_url: string | null
+  default_unit_type: UnitType
 }
 
 export const EVENT_EMITTER_PRIORITY_DEFAULT = 0

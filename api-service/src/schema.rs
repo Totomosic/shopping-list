@@ -1,4 +1,14 @@
 table! {
+    shopping_item (id) {
+        id -> Int4,
+        name -> Varchar,
+        description -> Nullable<Varchar>,
+        image_url -> Nullable<Varchar>,
+        default_unit_type -> Varchar,
+    }
+}
+
+table! {
     spatial_ref_sys (srid) {
         srid -> Int4,
         auth_name -> Nullable<Varchar>,
@@ -19,6 +29,7 @@ table! {
 }
 
 allow_tables_to_appear_in_same_query!(
+    shopping_item,
     spatial_ref_sys,
     users,
 );

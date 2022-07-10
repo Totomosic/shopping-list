@@ -1,6 +1,6 @@
 import { GlobalStore } from "@/store"
 import { fetchJsonAuthenticated, IFetchOptions } from "./fetch"
-import { GenericResponse, INewUser, IUser } from "./types"
+import { GenericResponse, INewShoppingItem, INewUser, IShoppingItem, IUser } from "./types"
 import { API_BASE, isSuccessResponse } from "./utils"
 
 export class AdminDataConnection {
@@ -12,10 +12,7 @@ export class AdminDataConnection {
 
   public async getAllUsers(): Promise<IUser[]> {
     const users = await this.fetch<IUser[]>("/users")
-    if (isSuccessResponse(users)) {
-      return users.data
-    }
-    return []
+    return isSuccessResponse(users) ? users.data : []
   }
 
   public async createNewUser(user: INewUser): Promise<IUser | null> {
@@ -31,6 +28,26 @@ export class AdminDataConnection {
       method: "DELETE",
     })
     return deletedUser?.data ?? null
+  }
+
+  public async getAllItems(): Promise<IShoppingItem[]> {
+    const items = await this.fetch<IShoppingItem[]>("/items")
+    return isSuccessResponse(items) ? items.data : []
+  }
+
+  public async createNewItem(item: INewShoppingItem): Promise<IShoppingItem | null> {
+    const createdItem = await this.fetch<IShoppingItem>("/items", {
+      method: "POST",
+      body: item,
+    })
+    return createdItem?.data ?? null
+  }
+
+  public async deleteItem(itemId: number): Promise<IShoppingItem | null> {
+    const deletedItem = await this.fetch<IShoppingItem>(`/items/${itemId}`, {
+      method: "DELETE",
+    })
+    return deletedItem?.data ?? null
   }
 
   private async fetch<T>(endpoint: string, options?: Partial<IFetchOptions>): Promise<GenericResponse<T> | null> {
